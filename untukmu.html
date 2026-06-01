@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Sayang ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: #333; overflow-x: hidden; }
+        
+        /* Screen Navigation */
+        .screen { display: none; min-height: 100vh; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; position: absolute; width: 100%; top: 0; left: 0; }
+        .screen.active { display: flex; animation: fadeIn 1s forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+        /* Typography & Buttons */
+        h1 { font-family: 'Dancing Script', cursive; font-size: 2.5rem; margin-bottom: 20px; color: #d6336c; }
+        p { font-size: 1rem; line-height: 1.6; margin-bottom: 15px; }
+        button { background: #d6336c; color: white; border: none; padding: 12px 25px; font-size: 1.1rem; border-radius: 25px; cursor: pointer; font-family: 'Poppins', sans-serif; box-shadow: 0 4px 15px rgba(214, 51, 108, 0.4); transition: transform 0.2s, background 0.2s; }
+        button:hover { background: #c2255c; transform: scale(1.05); }
+
+        /* Loader */
+        .loader { width: 50px; height: 50px; border: 5px solid #fecfef; border-top: 5px solid #d6336c; border-radius: 50%; animation: spin 1s linear infinite; margin-top: 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Photo Gallery */
+        .photo-container { max-width: 90vw; max-height: 60vh; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.15); margin-bottom: 20px; background: white; padding: 10px; }
+        .photo-container img { width: 100%; height: 50vh; object-fit: contain; border-radius: 10px; animation: fadeIn 0.5s forwards; }
+
+        /* Envelope Animation */
+        .envelope-container { cursor: pointer; position: relative; margin-top: 20px; }
+        .envelope { width: 280px; height: 180px; background: #e5a4a4; position: relative; box-shadow: 0 10px 20px rgba(0,0,0,0.2); border-radius: 5px; }
+        .envelope::before { content: ''; position: absolute; top: 0; left: 0; border-right: 140px solid transparent; border-left: 140px solid transparent; border-top: 100px solid #f4c2c2; border-bottom: 90px solid transparent; z-index: 3; transform-origin: top; transition: transform 0.6s ease-in-out; }
+        .envelope::after { content: ''; position: absolute; bottom: 0; left: 0; border-right: 140px solid #f9d0d0; border-left: 140px solid #f9d0d0; border-top: 90px solid transparent; border-bottom: 90px solid #e5a4a4; z-index: 2; border-radius: 0 0 5px 5px; }
+        .envelope-paper { position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px; background: white; z-index: 1; transition: transform 0.8s ease-in-out; border-radius: 5px; }
+        .envelope-container.open .envelope::before { transform: rotateX(180deg); z-index: 1; }
+        .envelope-container.open .envelope-paper { transform: translateY(-80px); z-index: 2; }
+        .click-hint { margin-top: 20px; font-style: italic; color: #555; animation: bounce 2s infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+        /* Letter View */
+        .letter-content { background: rgba(255, 255, 255, 0.9); padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: left; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; }
+        .letter-content p { font-size: 0.95rem; }
+
+        /* Make a Wish */
+        .wish-box { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 90%; max-width: 400px; margin-top: 20px; z-index: 10; position: relative; }
+        .wish-box textarea { width: 100%; height: 100px; padding: 15px; border: 1px solid #ff9a9e; border-radius: 10px; margin-bottom: 15px; font-family: 'Poppins', sans-serif; resize: none; outline: none; }
+        .wish-box textarea:focus { border-color: #d6336c; }
+
+        /* Falling Flowers */
+        #flower-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 5; display: none; overflow: hidden;}
+        .flower { position: absolute; font-size: 25px; animation: fall linear infinite; top: -10%; }
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bgm" src="https://files.catbox.moe/rmsiye.mp3" loop></audio>
+
+    <div id="phase1" class="screen active">
+        <h1>Ada sesuatu nih buat kamu...</h1>
+        <button onclick="startJourney()">Buka Sekarang</button>
+    </div>
+
+    <div id="phase2" class="screen">
+        <h1>Tunggu bentar yah...</h1>
+        <div class="loader"></div>
+    </div>
+
+    <div id="phase3" class="screen">
+        <h1>Momen Kita ❤️</h1>
+        <div class="photo-container">
+            <img id="gallery-img" src="" alt="Kenangan Kita">
+        </div>
+        <button onclick="nextPhoto()">Selanjutnya</button>
+    </div>
+
+    <div id="phase4" class="screen">
+        <h1>Ada surat buat kamu 💌</h1>
+        <div class="envelope-container" onclick="openEnvelope(this)">
+            <div class="envelope">
+                <div class="envelope-paper"></div>
+            </div>
+        </div>
+        <p class="click-hint">Klik amplopnya ya!</p>
+    </div>
+
+    <div id="phase4b" class="screen">
+        <div class="letter-content">
+            <h1 style="text-align: center;">Happy Birthday! 🎉❤️</h1>
+            <p>Happy birthday, Sayang! 🎉❤️ Honestly, words aren’t enough to express how grateful I am to have you in my life. Hari ini hari spesial kamu, tapi rasanya aku yang paling beruntung karena bisa ngerayain hari ini bareng kamu.</p>
+            <p>Thank you for being such an amazing partner. Makasih ya udah selalu sabar, selalu dengerin curhatan aku yang kadang random banget, and for always holding my hand through the ups and downs. Bersama kamu, semuanya jadi terasa lebih mudah dan menyenangkan. You really make my world a better and brighter place.</p>
+            <p>Di umur yang baru ini, I wish you nothing but the absolute best. Semoga kamu selalu sehat, dikelilingi kebahagiaan, dan semua mimpi-mimpi hebat yang sering kamu ceritain ke aku bisa terwujud satu per satu. I’ll always be here to support you, no matter what. Don't ever forget that I’m your number one fan!</p>
+            <p>Enjoy your special day, Love. Semoga tahun ini membawa banyak kejutan manis buat kamu. Sekali lagi, happy birthday to the person who holds my heart. I love you so much, more than words can say!</p>
+            <div style="text-align: center; margin-top: 20px;">
+                <button onclick="goToFinale()">Terima Kasih ❤️</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="phase5" class="screen">
+        <h1 style="font-size: 3.5rem; margin-bottom: 5px;">Selamat Ulang Tahun,</h1>
+        <h1 style="font-size: 3.5rem;">Sayang ❤️</h1>
+        
+        <div class="wish-box" id="wish-box">
+            <h3 style="margin-bottom: 10px; color: #d6336c;">Make a Wish 🌟</h3>
+            <p style="font-size: 0.85rem; color: #666;">Tulis harapan dan doamu di tahun ini...</p>
+            <textarea id="wish-text" placeholder="Semoga di umur yang baru ini..."></textarea>
+            <button onclick="submitWish()">Amin!</button>
+        </div>
+    </div>
+
+    <div id="flower-container"></div>
+
+    <script>
+        // Photo Array (Updated with new direct links)
+        const photos = [
+            "https://i.postimg.cc/Hrp1PG1R/image.jpg",
+            "https://i.postimg.cc/Mnd2CsWk/image.jpg",
+            "https://i.postimg.cc/RWX5kPvy/image.jpg",
+            "https://i.postimg.cc/PC2sg6tL/image.jpg",
+            "https://i.postimg.cc/zLvZ8nBy/image.jpg",
+            "https://i.postimg.cc/yDv4MfVC/image.jpg",
+            "https://i.postimg.cc/5XndhPx1/image.jpg",
+            "https://i.postimg.cc/gx0BZGWw/image.jpg",
+            "https://i.postimg.cc/R6xkf2dR/image.jpg",
+            "https://i.postimg.cc/gXbCR1sV/image.jpg",
+            "https://i.postimg.cc/ygCM92jT/image.jpg",
+            "https://i.postimg.cc/R6xkf2dG/image.jpg"
+        ];
+        
+        let currentPhotoIndex = 0;
+
+        // Navigation Helper
+        function switchScreen(hideId, showId) {
+            document.getElementById(hideId).classList.remove('active');
+            document.getElementById(showId).classList.add('active');
+        }
+
+        // Start button clicked
+        function startJourney() {
+            // Play Audio
+            document.getElementById('bgm').play();
+            
+            // Go to Loading Screen
+            switchScreen('phase1', 'phase2');
+
+            // Wait 3 seconds, then load gallery
+            setTimeout(() => {
+                document.getElementById('gallery-img').src = photos[currentPhotoIndex];
+                switchScreen('phase2', 'phase3');
+            }, 3000);
+        }
+
+        // Next photo in gallery
+        function nextPhoto() {
+            currentPhotoIndex++;
+            if (currentPhotoIndex < photos.length) {
+                // Remove animation, update source, trigger animation again
+                const img = document.getElementById('gallery-img');
+                img.style.animation = 'none';
+                img.offsetHeight; // trigger reflow
+                img.src = photos[currentPhotoIndex];
+                img.style.animation = 'fadeIn 0.5s forwards';
+            } else {
+                // Done with photos, go to envelope
+                switchScreen('phase3', 'phase4');
+            }
+        }
+
+        // Open Envelope
+        function openEnvelope(element) {
+            if (!element.classList.contains('open')) {
+                element.classList.add('open');
+                document.querySelector('.click-hint').innerText = "Membuka surat...";
+                
+                // Wait for animation to finish, then show letter
+                setTimeout(() => {
+                    switchScreen('phase4', 'phase4b');
+                }, 1500);
+            }
+        }
+
+        // Go to Finale (Birthday + Wish + Flowers)
+        function goToFinale() {
+            switchScreen('phase4b', 'phase5');
+            startFallingFlowers();
+        }
+
+        // Flower Animation Logic
+        function startFallingFlowers() {
+            const container = document.getElementById('flower-container');
+            container.style.display = 'block';
+            const flowers = ['🌸', '🌺', '🌷', '🌹', '✨', '💖'];
+            
+            // Generate flowers periodically
+            setInterval(() => {
+                const flower = document.createElement('div');
+                flower.innerText = flowers[Math.floor(Math.random() * flowers.length)];
+                flower.classList.add('flower');
+                
+                // Randomize position, size, and fall speed
+                flower.style.left = Math.random() * 100 + 'vw';
+                flower.style.fontSize = (Math.random() * 15 + 15) + 'px';
+                flower.style.animationDuration = (Math.random() * 3 + 4) + 's'; // 4s to 7s
+
+                container.appendChild(flower);
+                
+                // Remove flower after it falls to prevent memory issues
+                setTimeout(() => { flower.remove(); }, 7000);
+            }, 300);
+        }
+
+        // Submit Wish
+        function submitWish() {
+            const wishText = document.getElementById('wish-text').value;
+            if(wishText.trim() === "") {
+                alert("Isi dulu harapannya yaa sayang! ❤️");
+                return;
+            }
+            
+            const wishBox = document.getElementById('wish-box');
+            wishBox.innerHTML = `
+                <h3 style="color: #d6336c; margin-bottom:10px;">Amin Paling Serius! ✨</h3>
+                <p>Harapanmu sudah didengar semesta.</p>
+                <p>Semoga semua doa baikmu di tahun ini terkabul ya sayang. I love you! ❤️</p>
+            `;
+        }
+    </script>
+</body>
+</html>
